@@ -12,34 +12,34 @@
 </template>
 
 <script>
-    import { computed, ref } from 'vue'
+    import { computed, reactive, toRefs } from 'vue'
 
     export default {
         name: 'RollTheDice',
 
         setup() {
-            const dice = ref(0)
-            const rolls = ref([])
+            const game = reactive({
+                dice: 0,
+                rolls: [],
+
+                total: computed(() =>
+                    game.rolls.reduce((accumulator, val) => {
+                        return accumulator + val
+                    }, 0)),
+            })
 
             function roll() {
-                dice.value = Math.floor(Math.random() * Math.floor(5)) + 1
-                rolls.value.unshift(dice.value)
+                game.dice = Math.floor(Math.random() * Math.floor(5)) + 1
+                game.rolls.unshift(game.dice)
             }
 
             function restart() {
-                dice.value = 0
-                rolls.value = []
+                game.dice = 0
+                game.rolls = []
             }
 
-            const total = computed(() =>
-                rolls.value.reduce((accumulator, val) => {
-                    return accumulator + val
-                }, 0))
-
             return {
-                dice,
-                rolls,
-                total,
+                ...toRefs(game),
                 roll,
                 restart,
             }
